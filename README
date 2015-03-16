@@ -1,0 +1,2 @@
+Algoritmo para resolver problemas do tipo Sudoku, utilizando técnica de backtrack com recursividade.
+Inicialmente é informado um vetor  V de  81 posicoes, correspondendo a 9 linhas e 9 colunas
