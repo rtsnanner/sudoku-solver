@@ -6,24 +6,62 @@ class SudokuLocus extends React.Component {
         this.state = {
             value: props.value,
             index: props.index,
-            locked: props.locked
+            locked: props.locked,
+            isEditing : false
         };
+
+        this.handleDbClick.bind(this);
     }
 
-    handleChange(evt) {
-        this.setState({value: evt.target.value});
+    handleKeyPress(evt) {
+        console.log(evt.key);
+        if(evt.key == 'Enter')
+        {
+            this.props.assignNewValue(this.state.index , this.state.value);        
+            this.setState({isEditing:false});
+        }
+    }
+
+    handleChange(evt, stillediting) {
+
+
+        let newValue = parseInt(evt.target.value,10);
+
+        if(newValue && newValue <= 9)
+        {
+            if(stillediting)        
+            {
+                this.props.assignNewValue(this.state.index , newValue);        
+                this.setState({isEditing:false , value: newValue});
+            }else{
+                this.setState({value: newValue});
+            }
+        }
+
+        
+    }
+
+    handleDbClick(evt){
+            this.setState({isEditing:true});
     }
 
     render() {
-        if (!this.state.locked) 
-            return (<input
-                className="col"
+        if (this.state.isEditing) 
+            return (
+                <div className="col-4"><input                
+                style={{width:"50px"}}
                 id={this.state.index}
                 name={`locus_${this.state.index}`}
                 value={this.state.value}
-                onChange={(evt) => this.handleChange(evt)}/>);
+                autoFocus
+                onBlur={(evt) => this.handleChange(evt, true)}
+                onKeyPress={(evt) => this.handleKeyPress(evt)}
+                onChange={(evt) => this.handleChange(evt, false)}/></div>);
         else 
-            return <span className="badge">{this.state.value}</span>;
+            return (
+            <div className="col-4" onDoubleClick={(evt)=>this.handleDbClick(evt)}>
+                {this.state.value}                
+            </div>);
         }
     }
 
@@ -33,27 +71,29 @@ class SudokuSquare extends React.Component {
 
             <div className="col">
                 <div className="card">
-                    <div className="card-body">
-                        {[0,1,2].map((it,ix) => {
+                    <div className="card-body ">
+                        {[0, 1, 2].map((it, ix) => {
                             return (
 
-                                <div className="row" key={it}>
-                            {this
-                                .props
-                                .board
-                                .map((item, index) => {
-                                    return {originalIndex: index, value: item};
-                                })
-                                .slice(this.props.firstIndex + 9*it, this.props.firstIndex + 9*it + 3)
-                                .map((item, index) => <SudokuLocus
-                                    key={item.originalIndex}
-                                    index={item.originalIndex}
-                                    value={item.originalIndex}/>)}
-                        </div>
+                                <div className="row justify-content-between" key={it}>
+                                    {this
+                                        .props
+                                        .board
+                                        .map((item, index) => {
+                                            return {originalIndex: index, value: item};
+                                        })
+                                        .slice(this.props.firstIndex + 9 * it, this.props.firstIndex + 9 * it + 3)
+                                        .map((item, index) => <SudokuLocus
+                                            locked = {this.props.locked.indexOf(item.originalIndex)>=0}
+                                            assignNewValue={this.props.assignNewValue}
+                                            key={item.originalIndex}
+                                            index={item.originalIndex}
+                                            value={item.value}/>)}
+                                </div>
 
-                            ) ;                           
+                            );
 
-                        })}                      
+                        })}
                     </div>
                 </div>
             </div>
@@ -67,51 +107,39 @@ class Sudoku extends React.Component {
     constructor() {
         super();
         this.state = {
-            board: Array(81).fill(1)
-        };
+            board: Array(81).fill('_'),
+            locked : [1,2,3]
+        };        
     }
 
-    handleChange(evt) {
-        const board = this
-            .state
-            .board
-            .slice(0);
-
-        let value = parseInt(evt.target.value, 10);
-
-        if (value) {
-
-            board[parseInt(evt.target.id, 10)] = value;
-
-        } else {
-            board[parseInt(evt.target.id, 10)] = undefined;
-        }
-
+    assignNewValue = (index,value) =>
+    {
+        console.log("new value assigned", index, value)
+        const board = this.state.board.slice(0);
+        board[index] = value;
         this.setState({board});
-    }
 
-    render() {
+        console.log(board);
+    }  
 
-        // breack the board into small tables (locus) 1st table     2nd table 3rdtable 0
-        // - 1 - 2     3 - 4 - 5      6 - 7 - 8  9 - 0 - 1     2   3   4   5 - 6   7 8 9
-        //   0     1   2   3       4   5   6
+    render() {     
 
         return (
             <div className="col-12">
                 <div className="row">
-                    <SudokuSquare board={this.state.board} firstIndex={0} key={1}/>
-                    <SudokuSquare board={this.state.board} firstIndex={3} key={2}/>
-                    <SudokuSquare board={this.state.board} firstIndex={9} key={3}/>
+                    <SudokuSquare board={this.state.board} locked={this.state.locked} assignNewValue={this.assignNewValue} firstIndex={0} key={1}/>
+                    <SudokuSquare board={this.state.board} locked={this.state.locked} assignNewValue={this.assignNewValue} firstIndex={3} key={2}/>
+                    <SudokuSquare board={this.state.board} locked={this.state.locked} assignNewValue={this.assignNewValue} firstIndex={9} key={3}/>
                 </div>
                 <div className="row">
-                    <SudokuSquare board={this.state.board} firstIndex={27} key={4}/>
-                    <SudokuSquare board={this.state.board} firstIndex={30} key={5}/>
-                    <SudokuSquare board={this.state.board} firstIndex={33} key={6}/>
+                    <SudokuSquare board={this.state.board} locked={this.state.locked} assignNewValue={this.assignNewValue} firstIndex={27} key={4}/>
+                    <SudokuSquare board={this.state.board} locked={this.state.locked} assignNewValue={this.assignNewValue} firstIndex={30} key={5}/>
+                    <SudokuSquare board={this.state.board} locked={this.state.locked} assignNewValue={this.assignNewValue} firstIndex={33} key={6}/>
                 </div>
                 <div className="row">
-                    <SudokuSquare board={this.state.board} firstIndex={54} key={7}/>
-                    <SudokuSquare board={this.state.board} firstIndex={57} key={8}/>
-                    <SudokuSquare board={this.state.board} firstIndex={60} key={9}/>
+                    <SudokuSquare board={this.state.board} locked={this.state.locked} assignNewValue={this.assignNewValue} firstIndex={54} key={7}/>
+                    <SudokuSquare board={this.state.board} locked={this.state.locked} assignNewValue={this.assignNewValue} firstIndex={57} key={8}/>
+                    <SudokuSquare board={this.state.board} locked={this.state.locked} assignNewValue={this.assignNewValue} firstIndex={60} key={9}/>
                 </div>
             </div>
         );
