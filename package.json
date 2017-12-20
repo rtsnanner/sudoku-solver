@@ -1,0 +1,17 @@
+{
+  "name": "sudoku-solver",
+  "homepage" : "https://rtsnanner.github.io/sudoku-solver/",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "react": "^16.2.0",
+    "react-dom": "^16.2.0",
+    "react-scripts": "1.0.17"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build && rmdir /s /q docs && rename build docs",
+    "test": "react-scripts test --env=jsdom",
+    "eject": "react-scripts eject"
+  }
+}
