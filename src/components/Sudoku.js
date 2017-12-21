@@ -28,8 +28,7 @@ class SudokuLocus extends React.Component {
         this.setState({isEditing: false});
     }
 
-    handleKeyPress(evt) {
-        console.log(evt.key);
+    handleKeyPress(evt) {        
         if (evt.key === 'Enter') {
 
             this.finishEditing(evt);
@@ -214,8 +213,7 @@ class Sudoku extends React.Component {
 
         starterIndexes.forEach((ix,donotusethisindex)=>{
             let generatedNumber = Math.ceil(Math.random()*9);
-            while(!this.validmove(generatedNumber,ix,board)){
-                console.log(generatedNumber, "not valid in index",ix);
+            while(!this.validmove(generatedNumber,ix,board)){                
                 generatedNumber = Math.ceil(Math.random()*9);
             }
 
@@ -225,15 +223,12 @@ class Sudoku extends React.Component {
         this.setState({board: board});
     }
 
-    solvePuzzle = () => {
-        console.log('solve puzzle');
+    solvePuzzle = () => {       
 
         let newBoard = this
             .state
             .board
             .slice(0);
-
-            console.log("board do solve" , "")
 
         this.SDK(0, newBoard, false);
 
