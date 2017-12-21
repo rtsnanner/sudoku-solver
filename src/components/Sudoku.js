@@ -28,7 +28,7 @@ class SudokuLocus extends React.Component {
         this.setState({isEditing: false});
     }
 
-    handleKeyPress(evt) {        
+    handleKeyPress(evt) {
         if (evt.key === 'Enter') {
 
             this.finishEditing(evt);
@@ -44,7 +44,10 @@ class SudokuLocus extends React.Component {
     }
 
     handleDbClick(evt) {
-        this.setState({isEditing: true});
+        if (!this.props.locked) {
+            this.setState({isEditing: true});
+        }
+
     }
 
     render() {
@@ -65,16 +68,37 @@ class SudokuLocus extends React.Component {
                     onKeyPress={(evt) => this.handleKeyPress(evt)}
                     onChange={(evt) => this.handleChange(evt, false)}/></div>
             );
-        else 
+        else {
+
+            let getNumberDisplay = () => {
+                if (this.props.locked) {
+                    return (
+                        <strong>
+                            {this.props.value
+                                ? this.props.value
+                                : '_'}
+                        </strong>
+                    );
+                } else {
+                    return (
+                        <span>
+                            {this.props.value
+                                ? this.props.value
+                                : '_'}
+                        </span>
+                    );
+                }
+            };
+
             return (
                 <div className="col-4" onDoubleClick={(evt) => this.handleDbClick(evt)}>
-                    {this.props.value
-                        ? this.props.value
-                        : '_'}
+                    {getNumberDisplay()}
                 </div>
             );
+
         }
     }
+}
 
 class SudokuSquare extends React.Component {
     render() {
@@ -99,6 +123,10 @@ class SudokuSquare extends React.Component {
                                             assignNewValue={this.props.assignNewValue}
                                             key={item.originalIndex}
                                             index={item.originalIndex}
+                                            locked={this
+                                            .props
+                                            .locked
+                                            .indexOf(item.originalIndex) >= 0}
                                             value={this.props.board[item.originalIndex]}/>)}
                                 </div>
                             );
@@ -116,11 +144,14 @@ class Sudoku extends React.Component {
     constructor() {
         super();
         this.state = {
-            board: Array(81).fill(undefined)
+            board: Array(81).fill(undefined),
+            locked: [],
+            shouldInterrupt: false,
+            solving: false
         };
     }
 
-    validmove(x, i, V) {
+    validMove(x, i, V) {
         let line = (i - i % 9) / 9;
         let column = i % 9;
 
@@ -155,33 +186,30 @@ class Sudoku extends React.Component {
         return true;
     }
 
-    SDK(i, board, seamless = true) {
+    Backtrack = (i, board) => {
+
+        if (this.state.shouldInterrupt) 
+            return true;
+        
         if (i > 81) {
             return true;
         }
 
         if (board[i]) {
-            return this.SDK(i + 1, board, seamless);
+            return this.Backtrack(i + 1, board);
         }
 
-        for (var k = 1; k <= 9; k++) {
-            if (this.validmove(k, i, board)) {
+        for (let k = 1; k <= 9; k++) {
+            if (this.validMove(k, i, board)) {
                 board[i] = k;
-                if (this.SDK(i + 1, board, seamless)) {
+
+                if (this.Backtrack(i + 1, board)) {
                     return true;
                 }
             }
         }
 
-        board[i] = undefined;
-
-        if (!seamless) {
-            setTimeout(() => {
-                this.setState({
-                    board: board.slice(0)
-                })
-            }, 300);
-        }
+        board[i] = 0;
 
         return false;
 
@@ -196,43 +224,63 @@ class Sudoku extends React.Component {
         this.setState({board});
     }
 
+    interruptSolution = () => {
+        this.setState({shouldInterrupt: true});
+    }
+
     newPuzzle = () => {
 
-        let starterIndexes = Array(20).fill(undefined);
+        let cluesIndexes = Array(17).fill(undefined);
 
-        starterIndexes.forEach((value,index,arr)=>{
-            let generatedIndex = Math.floor(Math.random()*81);
-            while(arr.indexOf(generatedIndex)>=0){                        
-                generatedIndex = Math.floor(Math.random()*81);
+        cluesIndexes.forEach((value, index, arr) => {
+            let generatedIndex = Math.floor(Math.random() * 81);
+            while (arr.indexOf(generatedIndex) >= 0) {
+                generatedIndex = Math.floor(Math.random() * 81);
             }
 
-            arr[index] = generatedIndex;            
+            arr[index] = generatedIndex;
         });
 
         const board = Array(81).fill(undefined);
 
-        starterIndexes.forEach((ix,donotusethisindex)=>{
-            let generatedNumber = Math.ceil(Math.random()*9);
-            while(!this.validmove(generatedNumber,ix,board)){                
-                generatedNumber = Math.ceil(Math.random()*9);
+        cluesIndexes.forEach((ix, donotusethisindex) => {
+            let clue = Math.ceil(Math.random() * 9);
+            while (!this.validMove(clue, ix, board)) {
+                clue = Math.ceil(Math.random() * 9);
             }
 
-            board[ix] = generatedNumber;
+            board[ix] = clue;
         });
 
-        this.setState({board: board});
+        this.setState({board: board, locked: cluesIndexes});
     }
 
-    solvePuzzle = () => {       
+    solvePuzzle = () => {
 
-        let newBoard = this
-            .state
-            .board
-            .slice(0);
+        if (this.state.solving) {
+            this.setState({shouldInterrupt: true});
+        } else {
 
-        this.SDK(0, newBoard, false);
+            this.setState({solving: true});
 
-        this.setState({board: newBoard});
+            setTimeout(() => {
+
+                let newBoard = this
+                    .state
+                    .board
+                    .slice(0);
+
+                if(!this.Backtrack(0, newBoard))
+                {
+                    alert('no solution was found')
+                }
+
+                this.setState({board: newBoard, shouldInterrupt: false, solving: false});
+
+            }, 600);
+
+        }
+
     }
 
     render() {
@@ -244,60 +292,35 @@ class Sudoku extends React.Component {
                         <button onClick={this.newPuzzle} className="btn btn-default btn-lg">New</button>
                     </div>
                     <div className="col-2">
-                        <button onClick={this.solvePuzzle} className="btn btn-success btn-lg">Solve</button>
+                        <button onClick={this.solvePuzzle} className={`btn btn-lg btn-${this.state.solving?"danger":"success"}`}>{this.state.solving
+                                ? "Interrupt"
+                                : "Solve"}</button>
                     </div>
                 </div>
-
+                <div className="clearfix">&nbsp;</div>
                 <div className="row">
-                    <SudokuSquare
+                {[0,3,6].map((item,index)=><SudokuSquare
                         board={this.state.board}
+                        locked={this.state.locked}
                         assignNewValue={this.assignNewValue}
-                        firstIndex={0}
-                        key={1}/>
-                    <SudokuSquare
-                        board={this.state.board}
-                        assignNewValue={this.assignNewValue}
-                        firstIndex={3}
-                        key={2}/>
-                    <SudokuSquare
-                        board={this.state.board}
-                        assignNewValue={this.assignNewValue}
-                        firstIndex={6}
-                        key={3}/>
+                        firstIndex={item}
+                        key={index}/>)}                    
                 </div>
                 <div className="row">
-                    <SudokuSquare
+                {[27,30,33].map((item,index)=><SudokuSquare
                         board={this.state.board}
+                        locked={this.state.locked}
                         assignNewValue={this.assignNewValue}
-                        firstIndex={27}
-                        key={4}/>
-                    <SudokuSquare
-                        board={this.state.board}
-                        assignNewValue={this.assignNewValue}
-                        firstIndex={30}
-                        key={5}/>
-                    <SudokuSquare
-                        board={this.state.board}
-                        assignNewValue={this.assignNewValue}
-                        firstIndex={33}
-                        key={6}/>
+                        firstIndex={item}
+                        key={index}/>)}                             
                 </div>
                 <div className="row">
-                    <SudokuSquare
+                {[54,57,60].map((item,index)=><SudokuSquare
                         board={this.state.board}
+                        locked={this.state.locked}
                         assignNewValue={this.assignNewValue}
-                        firstIndex={54}
-                        key={7}/>
-                    <SudokuSquare
-                        board={this.state.board}
-                        assignNewValue={this.assignNewValue}
-                        firstIndex={57}
-                        key={8}/>
-                    <SudokuSquare
-                        board={this.state.board}
-                        assignNewValue={this.assignNewValue}
-                        firstIndex={60}
-                        key={9}/>
+                        firstIndex={item}
+                        key={index}/>)}                             
                 </div>
             </div>
         );
