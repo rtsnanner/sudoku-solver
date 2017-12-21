@@ -69,7 +69,7 @@ class SudokuLocus extends React.Component {
         else 
             return (
                 <div className="col-4" onDoubleClick={(evt) => this.handleDbClick(evt)}>
-                   {this.props.value
+                    {this.props.value
                         ? this.props.value
                         : '_'}
                 </div>
@@ -93,19 +93,16 @@ class SudokuSquare extends React.Component {
                     <div className="card-body ">
                         {[0, 1, 2].map((it, ix) => {
                             return (
-
                                 <div className="row justify-content-between" key={it}>
                                     {mappedBoard
                                         .slice(this.props.firstIndex + 9 * it, this.props.firstIndex + 9 * it + 3)
                                         .map((item, index) => <SudokuLocus
                                             assignNewValue={this.props.assignNewValue}
                                             key={item.originalIndex}
-                                            index={item.originalIndex}                                            
+                                            index={item.originalIndex}
                                             value={this.props.board[item.originalIndex]}/>)}
                                 </div>
-
                             );
-
                         })}
                     </div>
                 </div>
@@ -127,6 +124,7 @@ class Sudoku extends React.Component {
     validmove(x, i, V) {
         let line = (i - i % 9) / 9;
         let column = i % 9;
+
         for (let j = 0; j < 9; j++) {
             if (V[line * 9 + j] === x) 
                 return false;
@@ -159,25 +157,31 @@ class Sudoku extends React.Component {
     }
 
     SDK(i, board, seamless = true) {
-        if (i > 81) {            
+        if (i > 81) {
             return true;
         }
-        if (board[i]) 
+
+        if (board[i]) {
             return this.SDK(i + 1, board, seamless);
+        }
+
         for (var k = 1; k <= 9; k++) {
             if (this.validmove(k, i, board)) {
                 board[i] = k;
-                if (this.SDK(i + 1, board, seamless)) 
+                if (this.SDK(i + 1, board, seamless)) {
                     return true;
                 }
             }
+        }
+
         board[i] = undefined;
-        
 
         if (!seamless) {
-            this.setState({
-                board: board.slice(0)
-            })
+            setTimeout(() => {
+                this.setState({
+                    board: board.slice(0)
+                })
+            }, 300);
         }
 
         return false;
@@ -194,7 +198,29 @@ class Sudoku extends React.Component {
     }
 
     newPuzzle = () => {
-        let board = Array(81).fill(undefined);
+
+        let starterIndexes = Array(20).fill(undefined);
+
+        starterIndexes.forEach((value,index,arr)=>{
+            let generatedIndex = Math.floor(Math.random()*81);
+            while(arr.indexOf(generatedIndex)>=0){                        
+                generatedIndex = Math.floor(Math.random()*81);
+            }
+
+            arr[index] = generatedIndex;            
+        });
+
+        const board = Array(81).fill(undefined);
+
+        starterIndexes.forEach((ix,donotusethisindex)=>{
+            let generatedNumber = Math.ceil(Math.random()*9);
+            while(!this.validmove(generatedNumber,ix,board)){
+                console.log(generatedNumber, "not valid in index",ix);
+                generatedNumber = Math.ceil(Math.random()*9);
+            }
+
+            board[ix] = generatedNumber;
+        });
 
         this.setState({board: board});
     }
@@ -202,11 +228,16 @@ class Sudoku extends React.Component {
     solvePuzzle = () => {
         console.log('solve puzzle');
 
-        let newBoard = this.state.board.slice(0);
+        let newBoard = this
+            .state
+            .board
+            .slice(0);
 
-        this.SDK(0, newBoard , false );
+            console.log("board do solve" , "")
 
-        this.setState({board:newBoard});
+        this.SDK(0, newBoard, false);
+
+        this.setState({board: newBoard});
     }
 
     render() {
@@ -215,10 +246,10 @@ class Sudoku extends React.Component {
             <div className="col-12">
                 <div className="row">
                     <div className="col-2">
-                        <button onClick={this.newPuzzle} className="btn btn-default btn-lg">New Puzzle</button>
+                        <button onClick={this.newPuzzle} className="btn btn-default btn-lg">New</button>
                     </div>
                     <div className="col-2">
-                        <button onClick={this.solvePuzzle} className="btn btn-success btn-lg">Solve!</button>
+                        <button onClick={this.solvePuzzle} className="btn btn-success btn-lg">Solve</button>
                     </div>
                 </div>
 
