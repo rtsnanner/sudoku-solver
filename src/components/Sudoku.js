@@ -80,8 +80,14 @@ class SudokuLocus extends React.Component {
                         </strong>
                     );
                 } else {
+
+                    let style = {};
+
+                    if (this.props.value && !this.props.valid) 
+                        style.color = "red";
+                    
                     return (
-                        <span>
+                        <span style={style}>
                             {this.props.value
                                 ? this.props.value
                                 : '_'}
@@ -123,6 +129,9 @@ class SudokuSquare extends React.Component {
                                             assignNewValue={this.props.assignNewValue}
                                             key={item.originalIndex}
                                             index={item.originalIndex}
+                                            valid={this
+                                            .props
+                                            .validMove(item.value, item.originalIndex, this.props.board)}
                                             locked={this
                                             .props
                                             .locked
@@ -152,6 +161,7 @@ class Sudoku extends React.Component {
     }
 
     validMove(x, i, V) {
+
         let line = (i - i % 9) / 9;
         let column = i % 9;
 
@@ -270,8 +280,7 @@ class Sudoku extends React.Component {
                     .board
                     .slice(0);
 
-                if(!this.Backtrack(0, newBoard))
-                {
+                if (!this.Backtrack(0, newBoard)) {
                     alert('no solution was found')
                 }
 
@@ -292,36 +301,40 @@ class Sudoku extends React.Component {
                         <button onClick={this.newPuzzle} className="btn btn-default btn-lg">New</button>
                     </div>
                     <div className="col-2">
-                        <button onClick={this.solvePuzzle} className={`btn btn-lg btn-${this.state.solving?"danger":"success"}`}>{this.state.solving
+                        <button
+                            onClick={this.solvePuzzle}
+                            className={`btn btn-lg btn-${this.state.solving
+                            ? "danger"
+                            : "success"}`}>{this.state.solving
                                 ? "Interrupt"
                                 : "Solve"}</button>
                     </div>
                 </div>
                 <div className="clearfix">&nbsp;</div>
-                <div className="row">
-                {[0,3,6].map((item,index)=><SudokuSquare
-                        board={this.state.board}
-                        locked={this.state.locked}
-                        assignNewValue={this.assignNewValue}
-                        firstIndex={item}
-                        key={index}/>)}                    
-                </div>
-                <div className="row">
-                {[27,30,33].map((item,index)=><SudokuSquare
-                        board={this.state.board}
-                        locked={this.state.locked}
-                        assignNewValue={this.assignNewValue}
-                        firstIndex={item}
-                        key={index}/>)}                             
-                </div>
-                <div className="row">
-                {[54,57,60].map((item,index)=><SudokuSquare
-                        board={this.state.board}
-                        locked={this.state.locked}
-                        assignNewValue={this.assignNewValue}
-                        firstIndex={item}
-                        key={index}/>)}                             
-                </div>
+                {[0, 1, 2].map((v) => <div className="row" key={v}>
+                    {[
+                        0 + 27 * v,
+                        3 + 27 * v,
+                        6 + 27 * v
+                    ].map((item, index) =>< SudokuSquare board = {
+                        this.state.board
+                    }
+                    locked = {
+                        this.state.locked
+                    }
+                    assignNewValue = {
+                        this.assignNewValue
+                    }
+                    validMove = {
+                        this.validMove
+                    }
+                    firstIndex = {
+                        item
+                    }
+                    key = {
+                        index
+                    } />)}
+                </div>)}
             </div>
         );
     }
