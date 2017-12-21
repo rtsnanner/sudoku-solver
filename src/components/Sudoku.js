@@ -1,4 +1,5 @@
 import React from 'react'
+import {backtrack,validMove, SDK} from '../sudokuHelpers'
 
 class SudokuLocus extends React.Component {
     constructor(props) {
@@ -129,7 +130,10 @@ class SudokuSquare extends React.Component {
                                             assignNewValue={this.props.assignNewValue}
                                             key={item.originalIndex}
                                             index={item.originalIndex}
-                                            valid={this
+                                            valid={item.value && this
+                                            .props
+                                            .locked
+                                            .indexOf(item.originalIndex) < 0 && this
                                             .props
                                             .validMove(item.value, item.originalIndex, this.props.board)}
                                             locked={this
@@ -152,78 +156,30 @@ class Sudoku extends React.Component {
 
     constructor() {
         super();
+
+        let initialBoard = [	
+            0,0,1, 5,9,0, 0,0,7,
+            0,0,5, 0,0,6, 0,9,0,
+            0,0,2, 0,0,4, 0,1,0,
+            0,9,0, 0,0,0, 0,4,0,
+            0,0,6, 0,1,0, 3,0,0,
+            0,5,0, 0,0,0, 0,2,0,
+            0,3,0, 6,0,0, 1,0,0,
+            0,2,0, 8,0,0, 5,0,0,
+            4,0,0, 0,5,3, 9,0,0
+        ];
+
         this.state = {
-            board: Array(81).fill(undefined),
-            locked: [],
+            //board: Array(81).fill(undefined),
+            board: initialBoard,
+            locked: initialBoard.map((val,ix) => val>0?ix:undefined),
             shouldInterrupt: false,
             solving: false
         };
-    }
 
-    validMove(x, i, V) {
-
-        let line = (i - i % 9) / 9;
-        let column = i % 9;
-
-        for (let j = 0; j < 9; j++) {
-            if (V[line * 9 + j] === x) 
-                return false;
-            if (V[column + 9 * j] === x) 
-                return false;
-            }
-        
-        if (line < 3) 
-            line = 0;
-        else if (line < 6) 
-            line = 3;
-        else 
-            line = 6;
-        
-        if (column < 3) 
-            column = 0;
-        else if (column < 6) 
-            column = 3;
-        else 
-            column = 6;
-        
-        for (let j = 0; j < 3; j++) {
-            for (let k = 0; k < 3; k++) {
-                if (V[(line + j) * 9 + (column + k)] === x) 
-                    return false;
-                }
-            }
-
-        return true;
-    }
-
-    Backtrack = (i, board) => {
-
-        if (this.state.shouldInterrupt) 
-            return true;
-        
-        if (i > 81) {
-            return true;
-        }
-
-        if (board[i]) {
-            return this.Backtrack(i + 1, board);
-        }
-
-        for (let k = 1; k <= 9; k++) {
-            if (this.validMove(k, i, board)) {
-                board[i] = k;
-
-                if (this.Backtrack(i + 1, board)) {
-                    return true;
-                }
-            }
-        }
-
-        board[i] = 0;
-
-        return false;
-
-    }
+        this.validMove = validMove.bind(this);
+        this.backtrack = SDK.bind(this);
+    }   
 
     assignNewValue = (index, value) => {
         const board = this
@@ -240,7 +196,7 @@ class Sudoku extends React.Component {
 
     newPuzzle = () => {
 
-        let cluesIndexes = Array(17).fill(undefined);
+        let cluesIndexes = Array(18).fill(undefined);
 
         cluesIndexes.forEach((value, index, arr) => {
             let generatedIndex = Math.floor(Math.random() * 81);
@@ -251,7 +207,7 @@ class Sudoku extends React.Component {
             arr[index] = generatedIndex;
         });
 
-        const board = Array(81).fill(undefined);
+        const board = Array(81).fill(0);
 
         cluesIndexes.forEach((ix, donotusethisindex) => {
             let clue = Math.ceil(Math.random() * 9);
@@ -280,9 +236,11 @@ class Sudoku extends React.Component {
                     .board
                     .slice(0);
 
-                if (!this.Backtrack(0, newBoard)) {
+                if (!this.backtrack(0, newBoard)) {
                     alert('no solution was found')
                 }
+
+                console.log(newBoard)
 
                 this.setState({board: newBoard, shouldInterrupt: false, solving: false});
 
