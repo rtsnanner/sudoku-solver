@@ -1,5 +1,5 @@
 import React from 'react'
-import {backtrack,validMove, SDK} from '../sudokuHelpers'
+import {backtrack,validMove} from '../sudokuHelpers'
 
 class SudokuLocus extends React.Component {
     constructor(props) {
@@ -169,8 +169,7 @@ class Sudoku extends React.Component {
             4,0,0, 0,5,3, 9,0,0
         ];
 
-        this.state = {
-            //board: Array(81).fill(undefined),
+        this.state = {            
             board: initialBoard,
             locked: initialBoard.map((val,ix) => val>0?ix:undefined),
             shouldInterrupt: false,
@@ -178,7 +177,7 @@ class Sudoku extends React.Component {
         };
 
         this.validMove = validMove.bind(this);
-        this.backtrack = SDK.bind(this);
+        this.backtrack =backtrack.bind(this);
     }   
 
     assignNewValue = (index, value) => {
@@ -227,24 +226,22 @@ class Sudoku extends React.Component {
             this.setState({shouldInterrupt: true});
         } else {
 
-            this.setState({solving: true});
+            this.setState({solving: true});            
 
-            setTimeout(() => {
+            setTimeout(()=>{
 
-                let newBoard = this
-                    .state
-                    .board
-                    .slice(0);
+            let newBoard = this
+                .state
+                .board
+                .slice(0);            
 
-                if (!this.backtrack(0, newBoard)) {
-                    alert('no solution was found')
-                }
+            if (!this.backtrack(0, newBoard)) {
+                alert('no solution was found')
+            }            
 
-                console.log(newBoard)
+            this.setState({board: newBoard, shouldInterrupt: false, solving: false});           
 
-                this.setState({board: newBoard, shouldInterrupt: false, solving: false});
-
-            }, 600);
+        },300);
 
         }
 
@@ -252,8 +249,14 @@ class Sudoku extends React.Component {
 
     render() {
 
+        let style = {};
+
+        if(this.state.solving)
+            style.cursor = "wait";
+
+
         return (
-            <div className="col-12">
+            <div className="col-12" style={style}>
                 <div className="row">
                     <div className="col-2">
                         <button onClick={this.newPuzzle} className="btn btn-default btn-lg">New</button>
