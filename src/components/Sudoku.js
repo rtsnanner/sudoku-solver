@@ -25,7 +25,7 @@ export default class Sudoku extends React.Component {
         this.state = {            
             board: initialBoard,
             locked: initialBoard.map((val,ix) => val>0?ix:undefined),
-            shouldInterrupt: false,
+            editing: false,
             solving: false
         };
 
@@ -53,7 +53,17 @@ export default class Sudoku extends React.Component {
             return this.state.locked.indexOf(ix)>=0?val : 0;
         })
 
-        this.setState({board});
+        this.setState({board, editing:false});
+    }
+
+    createYourOwnPuzzle = () => {
+        if(!this.state.editing)
+        {
+            const board = Array(81).fill(0);
+            this.setState({board: board, locked: [], editing: true});
+        }else{
+            this.setState({locked: this.state.board.map((val,ix)=> val?ix:undefined), editing: false});
+        }
     }
 
     /**
@@ -105,7 +115,7 @@ export default class Sudoku extends React.Component {
                     alert('no solution was found')
                 }            
 
-                this.setState({board: newBoard, shouldInterrupt: false, solving: false});           
+                this.setState({board: newBoard, solving: false});           
 
             },300);        
         }
@@ -122,12 +132,17 @@ export default class Sudoku extends React.Component {
             <div className="card" style={style}>
             <div className="card-header">  
                     <div className="row">              
+
                     <div className="col-2">
                         <button onClick={this.newPuzzle} className="btn btn-default">New</button>
                     </div>
 
                     <div className="col-2">
-                        <button onClick={this.clearPuzzle} className="btn btn-default">Clear</button>
+                        <button onClick={this.createYourOwnPuzzle} className={`btn btn-${this.state.editing?"success":"default"}`}>{this.state.editing?"Save":"Create"}</button>
+                    </div>
+
+                    <div className="col-2">
+                        <button onClick={this.clearPuzzle} className={`btn btn-${this.state.editing?"danger":"default"}`}>{this.state.editing?"Cancel":"Clear"}</button>
                     </div>
 
                     <div className="col-2">

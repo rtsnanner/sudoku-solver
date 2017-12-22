@@ -101,7 +101,7 @@ export default class SudokuLocus extends React.Component {
             };
 
             return (
-                <div className="col-4" onDoubleClick={(evt) => this.handleDbClick(evt)}>
+                <div className="col-4" onClick={(evt) => this.handleDbClick(evt)}>
                     {getNumberDisplay()}
                 </div>
             );
