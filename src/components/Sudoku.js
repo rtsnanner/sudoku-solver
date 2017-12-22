@@ -143,7 +143,7 @@ export default class Sudoku extends React.Component {
                 </div>
                 <div className="clearfix">&nbsp;</div>
                 <div className="card-body">
-                {[0, 1, 2].map((v) => <div key={v}><div className="row">
+                {[0, 1, 2].map((v) => <div key={v}><div className="row row justify-content-between">
                     {[
                         0 + 27 * v,
                         3 + 27 * v,

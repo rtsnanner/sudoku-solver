@@ -17,8 +17,8 @@ export default class SudokuSquare extends React.Component {
         return (
 
             <div className="col">
-                <div className="card">
-                    <div className="card-body ">
+                {/* <div className="card"> */}
+                    {/* <div className="card-body "> */}
                         {[0, 1, 2].map((it, ix) => {
                             return (
                                 <div className="row justify-content-between" key={it}>
@@ -42,8 +42,8 @@ export default class SudokuSquare extends React.Component {
                                 </div>
                             );
                         })}
-                    </div>
-                </div>
+                    {/* </div> */}
+                {/* </div> */}
             </div>
 
         );
