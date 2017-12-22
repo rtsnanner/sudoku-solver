@@ -23,7 +23,7 @@ class SudokuLocus extends React.Component {
         } else {
             this
                 .props
-                .assignNewValue(this.props.index, undefined);
+                .assignNewValue(this.props.index, 0);
         }
 
         this.setState({isEditing: false});

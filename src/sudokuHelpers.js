@@ -22,7 +22,7 @@ const validMove = (x, i, V) => {
 	for(let j = 0; j<3;j++){
 		for(let k = 0; k<3;k++){
 
-            if(V[(line+j)*9 + (column+k)] && (line+j)*9 + (column+k) === i) continue;
+            if(V[(line+j)*9 + (column+k)] && ((line+j)*9 + (column+k)) === i) continue;
 
 			if(V[(line+j)*9 + (column+k)]===x) return false;
 		}			
