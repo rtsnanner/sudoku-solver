@@ -118,28 +118,31 @@ export default class Sudoku extends React.Component {
         if(this.state.solving)
             style.cursor = "wait";
 
-        return (
-            <div className="col-12" style={style}>
-                <div className="row">
+        return (            
+            <div className="card" style={style}>
+            <div className="card-header">  
+                    <div className="row">              
                     <div className="col-2">
-                        <button onClick={this.newPuzzle} className="btn btn-default btn-lg">New</button>
+                        <button onClick={this.newPuzzle} className="btn btn-default">New</button>
                     </div>
 
                     <div className="col-2">
-                        <button onClick={this.clearPuzzle} className="btn btn-default btn-lg">Clear</button>
+                        <button onClick={this.clearPuzzle} className="btn btn-default">Clear</button>
                     </div>
 
                     <div className="col-2">
                         <button
                             onClick={this.solvePuzzle}
-                            className={`btn btn-lg btn-${this.state.solving
+                            className={`btn btn-${this.state.solving
                             ? "danger"
                             : "success"}`}>{this.state.solving
                                 ? "Processing"
                                 : "Solve"}</button>
                     </div>
+                    </div>
                 </div>
                 <div className="clearfix">&nbsp;</div>
+                <div className="card-body">
                 {[0, 1, 2].map((v) => <div key={v}><div className="row">
                     {[
                         0 + 27 * v,
@@ -166,6 +169,7 @@ export default class Sudoku extends React.Component {
                     
                 </div><div className="clearfix">&nbsp;</div></div>)}
             </div>
+            </div>            
         );
     }
 }
