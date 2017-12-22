@@ -25,8 +25,8 @@ export default class Sudoku extends React.Component {
         this.state = {            
             board: initialBoard,
             locked: initialBoard.map((val,ix) => val>0?ix:undefined),
-            editing: false,
-            solving: false
+            isEditing: false,
+            isSolving: false
         };
 
         this.validMove = validMove.bind(this);
@@ -53,16 +53,16 @@ export default class Sudoku extends React.Component {
             return this.state.locked.indexOf(ix)>=0?val : 0;
         })
 
-        this.setState({board, editing:false});
+        this.setState({board, isEditing:false});
     }
 
     createYourOwnPuzzle = () => {
-        if(!this.state.editing)
+        if(!this.state.isEditing)
         {
             const board = Array(81).fill(0);
-            this.setState({board: board, locked: [], editing: true});
+            this.setState({board: board, locked: [], isEditing: true});
         }else{
-            this.setState({locked: this.state.board.map((val,ix)=> val?ix:undefined), editing: false});
+            this.setState({locked: this.state.board.map((val,ix)=> val?ix:undefined), isEditing: false});
         }
     }
 
@@ -100,7 +100,7 @@ export default class Sudoku extends React.Component {
      * Solves a puzzle using the funcions defined in sudokuHelper file
      */
     solvePuzzle = () => {        
-        if(!this.state.solving)
+        if(!this.state.isSolving)
         {
             this.setState({solving: true});            
 
@@ -124,8 +124,12 @@ export default class Sudoku extends React.Component {
     render() {
 
         let style = {};
+        let btnStyle = {}
 
-        if(this.state.solving)
+        if(this.state.isEditing)
+            btnStyle.display = "none";
+
+        if(this.state.isSolving)
             style.cursor = "wait";
 
         return (            
@@ -134,23 +138,24 @@ export default class Sudoku extends React.Component {
                     <div className="row">              
 
                     <div className="col-2">
-                        <button onClick={this.newPuzzle} className="btn btn-default">New</button>
+                        <button onClick={this.newPuzzle} className="btn btn-default" style={btnStyle} >New</button>
                     </div>
 
                     <div className="col-2">
-                        <button onClick={this.createYourOwnPuzzle} className={`btn btn-${this.state.editing?"success":"default"}`}>{this.state.editing?"Save":"Create"}</button>
+                        <button onClick={this.createYourOwnPuzzle} className={`btn btn-${this.state.isEditing?"primary":"default"}`}>{this.state.isEditing?"Save":"Create"}</button>
                     </div>
 
                     <div className="col-2">
-                        <button onClick={this.clearPuzzle} className={`btn btn-${this.state.editing?"danger":"default"}`}>{this.state.editing?"Cancel":"Clear"}</button>
+                        <button onClick={this.clearPuzzle} className={`btn btn-${this.state.isEditing?"danger":"default"}`}>{this.state.isEditing?"Cancel":"Clear"}</button>
                     </div>
 
                     <div className="col-2">
                         <button
                             onClick={this.solvePuzzle}
-                            className={`btn btn-${this.state.solving
+                            style={btnStyle}
+                            className={`btn btn-${this.state.isSolving
                             ? "danger"
-                            : "success"}`}>{this.state.solving
+                            : "success"}`}>{this.state.isSolving
                                 ? "Processing"
                                 : "Solve"}</button>
                     </div>
