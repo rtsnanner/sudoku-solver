@@ -272,7 +272,7 @@ class Sudoku extends React.Component {
                     </div>
                 </div>
                 <div className="clearfix">&nbsp;</div>
-                {[0, 1, 2].map((v) => <div className="row" key={v}>
+                {[0, 1, 2].map((v) => <div key={v}><div className="row">
                     {[
                         0 + 27 * v,
                         3 + 27 * v,
@@ -295,7 +295,8 @@ class Sudoku extends React.Component {
                     key = {
                         index
                     } />)}
-                </div>)}
+                    
+                </div><div className="clearfix">&nbsp;</div></div>)}
             </div>
         );
     }
