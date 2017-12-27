@@ -1,7 +1,11 @@
-import React from 'react'
-import {backtrack,validMove} from '../../utils/sudokuHelpers'
+import React from 'react';
+import * as firebase from 'firebase';
 
-import SudokuSquare from '../../components/Sudoku/SudokuSquare'
+import {backtrack,validMove} from '../../utils/sudokuHelpers';
+
+import SudokuSquare from '../../components/Sudoku/SudokuSquare';
+ 
+import config from './firebase-config';
 
 export default class Sudoku extends React.Component {
 
@@ -31,6 +35,8 @@ export default class Sudoku extends React.Component {
 
         this.validMove = validMove.bind(this);
         this.backtrack =backtrack.bind(this);
+
+        firebase.initializeApp(config);
     }   
 
     /**
@@ -62,6 +68,9 @@ export default class Sudoku extends React.Component {
             const board = Array(81).fill(0);
             this.setState({board: board, locked: [], isEditing: true});
         }else{
+
+            firebase.database().ref('boards').push(this.state.board);
+
             this.setState({locked: this.state.board.map((val,ix)=> val?ix:undefined), isEditing: false});
         }
     }
