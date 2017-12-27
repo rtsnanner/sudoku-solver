@@ -1,0 +1,5 @@
+.sudoku-square{
+    border: 1px solid;
+    padding: 1em;
+    margin: 2px;
+}

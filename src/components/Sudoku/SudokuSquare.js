@@ -16,7 +16,7 @@ export default class SudokuSquare extends React.Component {
 
         return (
 
-            <div className="col">
+            <div className="col sudoku-square">
                 {/* <div className="card"> */}
                     {/* <div className="card-body "> */}
                         {[0, 1, 2].map((it, ix) => {

@@ -1,6 +1,6 @@
 {
   "name": "sudoku-solver",
-  "homepage" : "https://sudokureact.firebaseapp.com",
+  "homepage": "https://sudokureact.firebaseapp.com",
   "version": "0.1.0",
   "private": true,
   "dependencies": {

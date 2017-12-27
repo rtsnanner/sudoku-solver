@@ -1,7 +1,7 @@
 import React from 'react'
-import {backtrack,validMove} from '../sudokuHelpers'
+import {backtrack,validMove} from '../../utils/sudokuHelpers'
 
-import SudokuSquare from './SudokuSquare'
+import SudokuSquare from '../../components/Sudoku/SudokuSquare'
 
 export default class Sudoku extends React.Component {
 

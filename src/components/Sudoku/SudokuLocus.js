@@ -60,7 +60,7 @@ export default class SudokuLocus extends React.Component {
                 <div className="col-4"><input
                     type="text"
                     style={{
-                    width: "50px"
+                    width: "25px"
                 }}
                     id={this.props.index}
                     name={`locus_${this.props.index}`}
