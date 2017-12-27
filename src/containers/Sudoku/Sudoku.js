@@ -134,61 +134,49 @@ export default class Sudoku extends React.Component {
 
         return (            
             <div className="card" style={style}>
-            <div className="card-header">  
+                <div className="card-header">  
                     <div className="row">              
 
-                    <div className="col-2">
-                        <button onClick={this.newPuzzle} className="btn btn-default" style={btnStyle} >New</button>
-                    </div>
+                        <div className="col-2">
+                            <button onClick={this.newPuzzle} className="btn btn-default" style={btnStyle} >New</button>
+                        </div>
 
-                    <div className="col-2">
-                        <button onClick={this.createYourOwnPuzzle} className={`btn btn-${this.state.isEditing?"primary":"default"}`}>{this.state.isEditing?"Save":"Create"}</button>
-                    </div>
+                        <div className="col-2">
+                            <button onClick={this.createYourOwnPuzzle} className={`btn btn-${this.state.isEditing?"primary":"default"}`}>{this.state.isEditing?"Save":"Create"}</button>
+                        </div>
 
-                    <div className="col-2">
-                        <button onClick={this.clearPuzzle} className={`btn btn-${this.state.isEditing?"danger":"default"}`}>{this.state.isEditing?"Cancel":"Clear"}</button>
-                    </div>
+                        <div className="col-2">
+                            <button onClick={this.clearPuzzle} className={`btn btn-${this.state.isEditing?"danger":"default"}`}>{this.state.isEditing?"Cancel":"Clear"}</button>
+                        </div>
 
-                    <div className="col-2">
-                        <button
-                            onClick={this.solvePuzzle}
-                            style={btnStyle}
-                            className={`btn btn-${this.state.isSolving
-                            ? "danger"
-                            : "success"}`}>{this.state.isSolving
-                                ? "Processing"
-                                : "Solve"}</button>
+                        <div className="col-2">
+                            <button
+                                onClick={this.solvePuzzle}
+                                style={btnStyle}
+                                className={`btn btn-${this.state.isSolving
+                                ? "danger"
+                                : "success"}`}>{this.state.isSolving
+                                    ? "Processing"
+                                    : "Solve"}</button>
+                        </div>
                     </div>
-                    </div>
-                </div>
-                <div className="clearfix">&nbsp;</div>
+                </div>                
                 <div className="card-body">
-                {[0, 1, 2].map((v) => <div key={v}><div className="row row justify-content-between">
-                    {[
-                        0 + 27 * v,
-                        3 + 27 * v,
-                        6 + 27 * v
-                    ].map((item, index) =>< SudokuSquare board = {
-                        this.state.board
-                    }
-                    locked = {
-                        this.state.locked
-                    }
-                    assignNewValue = {
-                        this.assignNewValue
-                    }
-                    validMove = {
-                        this.validMove
-                    }
-                    firstIndex = {
-                        item
-                    }
-                    key = {
-                        index
-                    } />)}
-                    
-                </div><div className="clearfix">&nbsp;</div></div>)}
-            </div>
+                {[0, 1, 2].map((v) =>
+                    <div className="row row justify-content-between" key={v}>
+                        {[
+                            0 + 27 * v,
+                            3 + 27 * v,
+                            6 + 27 * v
+                        ].map((item, index) =><SudokuSquare 
+                        board = {this.state.board}
+                        locked = {this.state.locked}
+                        assignNewValue = {this.assignNewValue}
+                        validMove = {this.validMove}
+                        firstIndex = {item}
+                        key = {index} />)}
+                    </div>)}
+                </div>
             </div>            
         );
     }
