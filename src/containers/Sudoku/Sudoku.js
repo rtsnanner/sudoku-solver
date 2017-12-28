@@ -4,7 +4,8 @@ import * as firebase from 'firebase';
 import {backtrack,validMove} from '../../utils/sudokuHelpers';
 
 import SudokuSquare from '../../components/Sudoku/SudokuSquare';
-import SudokuReadOnlySquare from '../../components/Sudoku/SudokuReadOnlySquare';
+
+import CommunityPuzzles from './CommunityPuzzles';
  
 import config from './firebase-config';
 
@@ -40,6 +41,11 @@ export default class Sudoku extends React.Component {
         firebase.initializeApp(config);
     }   
 
+
+    updateBoard = (board) =>{        
+        this.setState({board , locked: board.map((it,ix) => it ? ix:undefined)});
+    }
+
     /**
      * This callback is used by sudoku locus to fill a value inside board field in state
      */
@@ -74,21 +80,7 @@ export default class Sudoku extends React.Component {
 
             this.setState({locked: this.state.board.map((val,ix)=> val?ix:undefined), isEditing: false});
         }
-    }
-
-    getPuzzleFromDB = () => {        
-
-        firebase.database().ref("boards").limitToLast(1).once('value').then(snapshot =>
-            {
-                var boardlist = snapshot.val();
-
-                Object.keys(boardlist).forEach((key) => {
-                    let board = boardlist[key];
-                    this.setState({board , locked: board.map((it,ix) => it?ix:undefined)});                                        
-                });
-                
-            });
-    }
+    } 
 
     /**
      * Creates a new puzzle with 18 clues in board
@@ -157,28 +149,16 @@ export default class Sudoku extends React.Component {
             style.cursor = "wait";
 
         return (            
+            <div>
             <div className="card" style={style}>
                 <div className="card-header">  
                     <div className="row justify-content-between">              
 
-                        
                             <button onClick={this.newPuzzle} className="btn btn-default" style={btnStyle} >New</button>
-                        
 
-                        
-                            <button onClick={this.getPuzzleFromDB} className="btn btn-default" style={btnStyle} >Community New</button>
-                        
-
-                        
                             <button onClick={this.createYourOwnPuzzle} className={`btn btn-${this.state.isEditing?"primary":"default"}`}>{this.state.isEditing?"Save":"Create"}</button>
                         
-
-                        
                             <button onClick={this.clearPuzzle} className={`btn btn-${this.state.isEditing?"danger":"default"}`}>{this.state.isEditing?"Cancel":"Clear"}</button>
-                        
-
-                        
-
                         
                             <button
                                 onClick={this.solvePuzzle}
@@ -192,6 +172,7 @@ export default class Sudoku extends React.Component {
                     </div>
                 </div>                
                 <div className="card-body">                
+                
                 {[0, 1, 2].map((v) =>
                     <div className="row justify-content-between" key={v}>
                         {[
@@ -206,8 +187,11 @@ export default class Sudoku extends React.Component {
                         firstIndex = {item}
                         key = {index} />)}
                     </div>)}
-                </div>
-            </div>            
+                    </div>                           
+            </div>
+            <CommunityPuzzles firebase={firebase} updateBoard={this.updateBoard}/>            
+            </div>
+            
         );
     }
 }

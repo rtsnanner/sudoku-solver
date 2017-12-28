@@ -7,6 +7,13 @@
 .sudoku-table{
     width: 100%;
     border: 2px solid;
+    margin-bottom: 1em;
+    opacity: 0.4;
+    cursor: pointer;
+}
+
+.sudoku-table:hover{    
+    opacity: 1;
 }
 
 .sudoku-table td{

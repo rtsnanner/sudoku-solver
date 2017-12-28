@@ -1,7 +1,5 @@
 import React from 'react';
 
-import SudokuLocus from './SudokuLocus';
-
 /**
  * This class holds code in order to exhibit 9 sudoku locus belonging to a single square on a sudoku field
  */
@@ -10,7 +8,8 @@ export default class SudokuReadOnlySquare extends React.Component {
         let board = this.props.board;
 
         return (
-            <table className="sudoku-table">                
+            <div className="col-4">
+            <table className="sudoku-table" onClick={() =>  this.props.handleClick(this.props.board)}>
                 <tbody>
                 {Array.from(Array(9).keys()).map((row)=>{ return (                    
                     <tr key={row}>
@@ -32,6 +31,7 @@ export default class SudokuReadOnlySquare extends React.Component {
                 })}
                 </tbody>
             </table>
+            </div>
         );
     }
 }
